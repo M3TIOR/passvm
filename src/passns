@@ -1,0 +1,64 @@
+#!/bin/sh -e
+
+PROGRAM="$(readlink -fn "$0")";
+PROGNAM="$(basename "$PROGRAM")";
+PROGDIR="$(dirname "$PROGRAM")";
+
+if ! USERID="$(id -u)"; then
+	echo "Failed to grab UID; rerun with appropriate privs!" >&2;
+	exit 1;
+fi;
+
+print_help() {
+	cat << EOF
+		Usage: "$PROGRAM" [-hvV] [] [COMMAND]
+EOF
+}
+
+while test "${#}" -gt 0; do
+	case "$1" in
+		-h|--help) print_help; exit;;
+		-V|--version) printf '%s\n' "v$VERSION"; exit;;
+		-v|--verbose)
+			if test "$(typeof -g "$2")" -gt 1; then
+				abrt "verbose flag expected integer, got "$2" which is '$(typeof "$2")'";
+			fi;
+			VERBOSE="$2"; shift;
+		;;
+		*) POSTPROC_ARGS="$POSTPROC_ARGS \"$(sanitize_quote_escapes "$1")\"";;
+	esac;
+	shift;
+done;
+if test -z "$POSTPROC_ARGS"; then print_help; exit 0; fi;
+eval "set $POSTPROC_ARGS";
+COMMAND="$1"; shift;
+
+export NEWROOT="$(mktemp -d -p "${XDG_RUNTIME_DIR:=/tmp}" passns.XXXXXX)";
+trap 'rm -r $NEWROOT;' 0;
+
+file_end="$(wc -c "$PROGRAM")";
+file_end="${file_end%% *}";
+magic="$(yes '#' | tr -d "\n" | head -c 40)";
+script_end="$(grep -B 1000 -m 1 -Fahe "$magic" "$PROGRAM" | wc -c)";
+script_end="${script_end%% *}";
+
+printf "Extracting";
+cd "$NEWROOT";
+
+tail -c "$(($script_end-$file_end))" "$PROGRAM" | \
+	cpio -t 2>/dev/null | grep -Eve "dev/.+" > contents;
+
+tail -c "$(($script_end-$file_end))" "$PROGRAM" | \
+	cpio -idV --pattern-file=contents -R "$USERID";
+
+mkdir -p "$NEWROOT/mnt/bridge";
+touch "$NEWROOT/mnt/bridge/";
+
+# TODO: Mount a LUKS image supplied by the CLI in the home dir.
+# TODO: Make this use /sbin/init; it should be using that rn, but for debugging
+#   purposes it's just shell for the time being.
+unshare -Ufirmp chroot "$NEWROOT" /bin/sh;
+exit; exit; exit; # Just in case
+
+# End bootstrap unpacking script.
+################################################################################

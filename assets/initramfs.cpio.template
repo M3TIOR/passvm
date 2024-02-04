@@ -1,0 +1,278 @@
+# Usage:
+# 	./usr/gen_init_cpio [-t <timestamp>] [-c] <cpio_list>
+# 
+# <cpio_list> is a file containing newline separated entries that
+# describe the files to be included in the initramfs archive:
+# 
+# # a comment
+# file <name> <location> <mode> <uid> <gid> [<hard links>]
+# dir <name> <mode> <uid> <gid>
+# nod <name> <mode> <uid> <gid> <dev_type> <maj> <min>
+# slink <name> <target> <mode> <uid> <gid>
+# pipe <name> <mode> <uid> <gid>
+# sock <name> <mode> <uid> <gid>
+#
+# <name>       name of the file/dir/nod/etc in the archive
+# <location>   location of the file in the current filesystem
+#              expands shell variables quoted with ${}
+# <target>     link target
+# <mode>       mode/permissions of the file
+# <uid>        user id (0=root)
+# <gid>        group id (0=root)
+# <dev_type>   device type (b=block, c=character)
+# <maj>        major number of nod
+# <min>        minor number of nod
+# <hard links> space separated list of other links to file
+
+# Entry script, Linux looks here before even /sbin/init and is pissy about
+# booting without it.
+file /init                  {{PASSVM_RAMFS}}/init       755 0 0
+
+# Critical kernel mountpoints
+dir /proc       755 0 0
+dir /sys        755 0 0
+dir /dev        755 0 0
+dir /var        755 0 0
+dir /run        755 0 0
+
+# Builtin configuration files
+dir /etc             755 0 0
+dir /etc/init.d      755 0 0
+
+# Binary folders; using usr-joined
+#dir /usr                 755 0 0
+#dir /usr/bin             755 0 0
+#dir /usr/sbin            755 0 0
+#slink /bin /usr/bin      755 0 0
+#slink /sbin /usr/sbin    755 0 0
+dir /bin                  755 0 0
+dir /sbin                 755 0 0
+
+# Unlocked user home; USED AS THE MOUNT TARGET
+dir /home       755 0 0
+dir /home/root  700 0 0
+
+# TODO: Look over kernel settings and set up necessary nodes
+# Make a few critical device nodes
+nod /dev/null        666 0 0 c 1 3
+nod /dev/zero        666 0 0 c 1 5
+nod /dev/tty         666 0 0 c 5 0
+nod /dev/tty0        666 0 0 c 4 0
+nod /dev/ttyS0       666 0 0 c 4 64
+nod /dev/console     600 0 0 c 5 1
+nod /dev/uinput      660 0 0 c 10 223
+nod /dev/urandom     666 0 0 c 1 9
+
+# Kernel CPU info
+dir /dev/cpu      755 0 0
+dir /dev/cpu/0    755 0 0
+dir /dev/cpu/1    755 0 0
+dir /dev/cpu/2    755 0 0
+dir /dev/cpu/3    755 0 0
+dir /dev/cpu/4    755 0 0
+dir /dev/cpu/5    755 0 0
+dir /dev/cpu/6    755 0 0
+dir /dev/cpu/7    755 0 0
+dir /dev/cpu/8    755 0 0
+dir /dev/cpu/9    755 0 0
+dir /dev/cpu/10   755 0 0
+dir /dev/cpu/11   755 0 0
+dir /dev/cpu/12   755 0 0
+dir /dev/cpu/13   755 0 0
+dir /dev/cpu/14   755 0 0
+dir /dev/cpu/15   755 0 0
+dir /dev/cpu/16   755 0 0
+dir /dev/cpu/17   755 0 0
+dir /dev/cpu/18   755 0 0
+dir /dev/cpu/19   755 0 0
+dir /dev/cpu/20   755 0 0
+dir /dev/cpu/21   755 0 0
+dir /dev/cpu/22   755 0 0
+dir /dev/cpu/23   755 0 0
+dir /dev/cpu/24   755 0 0
+dir /dev/cpu/25   755 0 0
+dir /dev/cpu/26   755 0 0
+dir /dev/cpu/27   755 0 0
+dir /dev/cpu/28   755 0 0
+dir /dev/cpu/29   755 0 0
+dir /dev/cpu/30   755 0 0
+dir /dev/cpu/31   755 0 0  
+dir /dev/cpu/32   755 0 0  
+
+# From CONFIG_X86_MSR Model Specific Registers; may not be needed,
+# TODO: see if this can be pruned from the initramfs & kernel
+#   Also test if you can remove entries without boot issues.
+nod /dev/cpu/0/msr    600 0 0 c 202 0
+nod /dev/cpu/1/msr    600 0 0 c 202 1
+nod /dev/cpu/2/msr    600 0 0 c 202 2
+nod /dev/cpu/3/msr    600 0 0 c 202 3
+nod /dev/cpu/4/msr    600 0 0 c 202 4
+nod /dev/cpu/5/msr    600 0 0 c 202 5
+nod /dev/cpu/6/msr    600 0 0 c 202 6
+nod /dev/cpu/7/msr    600 0 0 c 202 7
+nod /dev/cpu/8/msr    600 0 0 c 202 8
+nod /dev/cpu/9/msr    600 0 0 c 202 9
+nod /dev/cpu/10/msr   600 0 0 c 202 10
+nod /dev/cpu/11/msr   600 0 0 c 202 11
+nod /dev/cpu/12/msr   600 0 0 c 202 12
+nod /dev/cpu/13/msr   600 0 0 c 202 13
+nod /dev/cpu/14/msr   600 0 0 c 202 14
+nod /dev/cpu/15/msr   600 0 0 c 202 15
+nod /dev/cpu/16/msr   600 0 0 c 202 16
+nod /dev/cpu/17/msr   600 0 0 c 202 17
+nod /dev/cpu/18/msr   600 0 0 c 202 18
+nod /dev/cpu/19/msr   600 0 0 c 202 19
+nod /dev/cpu/20/msr   600 0 0 c 202 20
+nod /dev/cpu/21/msr   600 0 0 c 202 21
+nod /dev/cpu/22/msr   600 0 0 c 202 22
+nod /dev/cpu/23/msr   600 0 0 c 202 23
+nod /dev/cpu/24/msr   600 0 0 c 202 24
+nod /dev/cpu/25/msr   600 0 0 c 202 25
+nod /dev/cpu/26/msr   600 0 0 c 202 26
+nod /dev/cpu/27/msr   600 0 0 c 202 27
+nod /dev/cpu/28/msr   600 0 0 c 202 28
+nod /dev/cpu/29/msr   600 0 0 c 202 29
+nod /dev/cpu/30/msr   600 0 0 c 202 30
+nod /dev/cpu/31/msr   600 0 0 c 202 31
+nod /dev/cpu/32/msr   600 0 0 c 202 32
+# From CONFIG_X86_CPUID
+nod /dev/cpu/0/cpuid    600 0 0 c 203 0
+nod /dev/cpu/1/cpuid    600 0 0 c 203 1
+nod /dev/cpu/2/cpuid    600 0 0 c 203 2
+nod /dev/cpu/3/cpuid    600 0 0 c 203 3
+nod /dev/cpu/4/cpuid    600 0 0 c 203 4
+nod /dev/cpu/5/cpuid    600 0 0 c 203 5
+nod /dev/cpu/6/cpuid    600 0 0 c 203 6
+nod /dev/cpu/7/cpuid    600 0 0 c 203 7
+nod /dev/cpu/8/cpuid    600 0 0 c 203 8
+nod /dev/cpu/9/cpuid    600 0 0 c 203 9
+nod /dev/cpu/10/cpuid   600 0 0 c 203 10
+nod /dev/cpu/11/cpuid   600 0 0 c 203 11
+nod /dev/cpu/12/cpuid   600 0 0 c 203 12
+nod /dev/cpu/13/cpuid   600 0 0 c 203 13
+nod /dev/cpu/14/cpuid   600 0 0 c 203 14
+nod /dev/cpu/15/cpuid   600 0 0 c 203 15
+nod /dev/cpu/16/cpuid   600 0 0 c 203 16
+nod /dev/cpu/17/cpuid   600 0 0 c 203 17
+nod /dev/cpu/18/cpuid   600 0 0 c 203 18
+nod /dev/cpu/19/cpuid   600 0 0 c 203 19
+nod /dev/cpu/20/cpuid   600 0 0 c 203 20
+nod /dev/cpu/21/cpuid   600 0 0 c 203 21
+nod /dev/cpu/22/cpuid   600 0 0 c 203 22
+nod /dev/cpu/23/cpuid   600 0 0 c 203 23
+nod /dev/cpu/24/cpuid   600 0 0 c 203 24
+nod /dev/cpu/25/cpuid   600 0 0 c 203 25
+nod /dev/cpu/26/cpuid   600 0 0 c 203 26
+nod /dev/cpu/27/cpuid   600 0 0 c 203 27
+nod /dev/cpu/28/cpuid   600 0 0 c 203 28
+nod /dev/cpu/29/cpuid   600 0 0 c 203 29
+nod /dev/cpu/30/cpuid   600 0 0 c 203 30
+nod /dev/cpu/31/cpuid   600 0 0 c 203 31
+nod /dev/cpu/32/cpuid   600 0 0 c 203 32
+
+
+# TODO: this may be wrong, see if there's a difference between a character and
+#   pipe device.
+# NOTE: The "Device:" or "Device type:" fields of `stat` can reveal the
+#       majors and minors of special devs.
+#   File: ./test
+#   Size: 0         	Blocks: 0          IO Block: 4096   fifo
+# Device: 179,26	Inode: 10489393    Links: 1
+# Access: (0644/prw-r--r--)  Uid: ( 4294/  m3tior)   Gid: ( 4294/  m3tior)
+# Access: 2024-01-20 23:35:29.460596939 -0800
+# Modify: 2024-01-20 23:35:29.460596939 -0800
+# Change: 2024-01-20 23:35:29.460596939 -0800
+#  Birth: 2024-01-20 23:35:29.460596939 -0800
+nod /dev/reversh        600 0 0 c 179 26
+
+# Busybox setup
+file /bin/busybox           {{BUSYBOX_SRC}}/busybox    755 0 0
+slink /bin/base64           /bin/busybox           755 0 0
+slink /bin/cat              /bin/busybox           755 0 0
+slink /bin/cp               /bin/busybox           755 0 0
+slink /bin/dmesg            /bin/busybox           755 0 0
+slink /bin/echo             /bin/busybox           755 0 0
+slink /bin/false            /bin/busybox           755 0 0
+slink /bin/getopt           /bin/busybox           755 0 0
+slink /bin/grep             /bin/busybox           755 0 0
+slink /bin/hostname         /bin/busybox           755 0 0
+slink /bin/kill             /bin/busybox           755 0 0
+slink /bin/ls               /bin/busybox           755 0 0
+slink /bin/mkdir            /bin/busybox           755 0 0
+slink /bin/mktemp           /bin/busybox           755 0 0
+slink /bin/mount            /bin/busybox           755 0 0
+slink /bin/mv               /bin/busybox           755 0 0
+slink /bin/ping             /bin/busybox           755 0 0
+slink /bin/rm               /bin/busybox           755 0 0
+slink /bin/rmdir            /bin/busybox           755 0 0
+slink /bin/sed              /bin/busybox           755 0 0
+slink /bin/sleep            /bin/busybox           755 0 0
+slink /bin/true             /bin/busybox           755 0 0
+slink /bin/umount           /bin/busybox           755 0 0
+slink /bin/basename         /bin/busybox           755 0 0
+slink /bin/cut              /bin/busybox           755 0 0
+slink /bin/dirname          /bin/busybox           755 0 0
+slink /bin/env              /bin/busybox           755 0 0
+slink /bin/find             /bin/busybox           755 0 0
+slink /bin/head             /bin/busybox           755 0 0
+slink /bin/less             /bin/busybox           755 0 0
+slink /bin/nc               /bin/busybox           755 0 0
+slink /bin/pkill            /bin/busybox           755 0 0
+slink /bin/printf           /bin/busybox           755 0 0
+slink /bin/realpath         /bin/busybox           755 0 0
+slink /bin/sh               /bin/busybox           755 0 0
+slink /bin/shred            /bin/busybox           755 0 0
+slink /bin/tail             /bin/busybox           755 0 0
+slink /bin/test             /bin/busybox           755 0 0
+slink /bin/top              /bin/busybox           755 0 0
+slink /bin/tr               /bin/busybox           755 0 0
+slink /bin/tree             /bin/busybox           755 0 0
+slink /bin/which            /bin/busybox           755 0 0
+slink /sbin/cttyhack        /bin/busybox           755 0 0
+#slink /usr/sbin/depmod          /usr/bin/busybox           755 0 0
+slink /sbin/getty           /bin/busybox           755 0 0
+slink /sbin/ifconfig        /bin/busybox           755 0 0
+slink /sbin/init            /bin/busybox           755 0 0
+slink /sbin/ip              /bin/busybox           755 0 0
+slink /sbin/poweroff        /bin/busybox           755 0 0
+#slink /usr/sbin/reboot          /usr/bin/busybox           755 0 0
+slink /sbin/route           /bin/busybox           755 0 0
+slink /sbin/sulogin         /bin/busybox           755 0 0
+slink /sbin/sync            /bin/busybox           755 0 0
+slink /sbin/sysctl          /bin/busybox           755 0 0
+slink /sbin/syslogd         /bin/busybox           755 0 0
+slink /sbin/tty             /bin/busybox           755 0 0
+
+# Gentoo compiled static files
+file /bin/gpg            {{BUILD_STAGING}}/usr/bin/gpg             755 0 0
+slink /bin/gpg2          /bin/gpg                                  755 0 0
+file /bin/gpgconf        {{BUILD_STAGING}}/usr/bin/gpgconf         755 0 0
+file /bin/gpg-agent      {{BUILD_STAGING}}/usr/bin/gpg-agent       755 0 0
+
+file /bin/cryptsetup     {{BUILD_STAGING}}/sbin/cryptsetup         755 0 0
+
+# Init system configuration
+file /etc/inittab            {{PASSVM_RAMFS}}/etc/inittab          644 0 0
+file /etc/init.d/shutdown    {{PASSVM_RAMFS}}/etc/init.d/shutdown  755 0 0
+file /etc/init.d/sysinit     {{PASSVM_RAMFS}}/etc/init.d/sysinit   755 0 0
+
+# Users
+file /etc/passwd             {{PASSVM_RAMFS}}/etc/passwd           644 0 0
+
+# Readline config {common dependency}
+file /etc/inputrc            {{BUILD_STAGING}}/etc/inputrc         644 0 0
+  
+# Bash
+file /bin/bash               {{BUILD_STAGING}}/bin/bash               755 0 0
+#slink /bin/bash              /bin/sh                                 755 0 0
+file /etc/bash/bashrc        {{BUILD_STAGING}}/etc/bash/bashrc        644 0 0
+dir /etc/bash/bashrc.d                                                755 0 0
+file /etc/bash/bash_logout   {{BUILD_STAGING}}/etc/bash/bash_logout   644 0 0
+
+# Editor
+#file /usr/bin/nano           {{BUILD_STAGING}}/bin/nano               755 0 0
+#file /etc/nanorc             {{PASSVM_RAMFS}}/etc/nanorc              644 0 0
+
+
+
+

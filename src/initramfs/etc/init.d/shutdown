@@ -1,0 +1,8 @@
+#!/bin/sh
+# /etc/init.d/shutdown - used by /etc/inittab to shutdown the system.
+
+# Sync all filesystems
+sync;
+
+# Umount filesystems.
+umount -arf >/dev/null 2>&1;

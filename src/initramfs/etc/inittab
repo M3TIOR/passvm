@@ -1,0 +1,18 @@
+# /etc/inittab: init configuration for busybox init.
+# Boot-time system configuration/initialization script.
+#
+
+# XXX: Entries starting without an ID are not broken even though my editor
+#   might thinks so, they still work.
+::sysinit:/etc/init.d/sysinit
+
+# /sbin/getty respawn shell invocations for selected ttys.
+::respawn:/sbin/cttyhack /bin/sh
+
+# Stuff to do when restarting the init 
+# process, or before rebooting.
+#::restart:/etc/init.d/shutdown
+#::restart:/sbin/init
+#::ctrlaltdel:/sbin/reboot
+::shutdown:/etc/init.d/shutdown
+

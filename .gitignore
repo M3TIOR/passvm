@@ -1,5 +1,7 @@
 # Prerequisites
 *.d
+!*.d/
+!*.d/*
 
 # Object files
 *.o
@@ -50,3 +52,11 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Build files.
+.buildfiles
+.gentoo-chroot
+reversing
+
+# Git files
+.git

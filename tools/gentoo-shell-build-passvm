@@ -1,0 +1,121 @@
+# TODO: don't forget to:
+#   emerge --sync; # first and foremost
+
+# NOTE:
+#   KERNEL_DIR must point to a valid kernel source tree for some packages
+#   to be built. Without it, they will attempt to link against the running
+#   kernel, use erronious headers, and result in a broken initramfs.
+# XXX: Required kernel options:
+#   * CONFIG_SYSVIPC <- lvm2 <- cryptsetup
+#   * CONFIG_DM_CRYPT <- cryptsetup
+export KERNEL_DIR="/mnt/kernel"; # OR ln -s /mnt/kernel /usr/src/linux;
+
+# NOTE: https://wiki.gentoo.org/wiki/Gentoo_Cheat_Sheet
+# NOTE: to find USE flags, use `equery uses <application>`
+# NOTE: to install equery, `emerge gentoolkit`
+# NOTE: For writing an ebuild
+#   https://devmanual.gentoo.org/eclass-reference/#contents
+
+# XXX: NOTE:
+#  when using emerge, after downloading package info using emerge --sync,
+#  and having updated the system binaries to their latest versions,
+#  root modifications will be saved in a global tracker stored in the chroot
+#  using emerge with --oneshot SHOULD prevent us from needing to run
+#  one of `dispatch-conf`, `cfg-update`, `etc-update`. All of which are tools
+#  designed to prevent us from merging incompatible configurations together
+#  in the same root filesystem. This doesn't work 100% as intended, as using
+#  an alternate --root doesn't modify the global tracker location. But this is
+#  information we need to know to get compilation to worka
+#
+# WARNING:
+#  When interpreting the output of emerge as an ebuild preview, packages
+#  destined for INSIDE the initramfs will have the /mnt/initramfs path appended
+#  in their list options. All other packages are build dependencies and will
+#  remain on the gentoo chroot. Fixing broken build dependencies looks like
+#  very erronious behavior as the USE flags don't propagate to the destination.
+#  They adhear to the global USE flags set by the build environment chroot.
+
+
+# NOTE: (split-usr) is forced on by Gentoo's build system which means after
+#   we install all our packages, we'll need to install and run the merge-usr
+#   script inside the build directory to fix the issue.
+grep -Eve '^#' << USEFLAGS | read -rd '' USE
+verify-sig
+nettle
+
+mbedtls curl_ssl_mbedtls 
+
+# Disable multithreading where possible; this should be so minimal and optimized
+# that it doesn't need multithreading.
+-threads
+
+# nls == GNU internationalization; not needed on embedded system.
+-nls
+
+# Use dynamic linked libraries; they're smaller footprint, and thanks to the
+# Gentoo portage system, there's no dependency tracking issues.
+static-libs
+static
+
+# The initramfs is 100% run as superuser
+-pam 
+
+# Unneeded feature of GnuPG
+-smartcard 
+
+# Unnecessary features of curl
+-ftp -smtp -adns -tftp -progress-meter -pop3 -curl_ssl_openssl -openssl -ssl
+
+# Unnecessary features of util-linux
+-su -suid -logger -hardlink -cramfs -udev -installkernel -multiarch
+USEFLAGS
+export USE="$USE";
+
+# TODO: Resolve the below problems:
+# QA Notice: Symbolic link /var/run points to /run which does not exist.
+# QA Notice: Symbolic link /var/lock points to /run/lock which does not exist.
+# QA Notice: Symbolic link /etc/mtab points to /proc/self/mounts which does not exist.
+#
+# Warning: tmpfiles.d not processed on ROOT != /. If you do not use
+#   a service manager supporting tmpfiles.d, you need to run
+#   the following command after booting (or chroot-ing with all
+#   appropriate filesystems mounted) into the ROOT:
+#
+#     tmpfiles --create
+#
+#   Failure to do so may result in missing runtime directories
+#   and failures to run programs or start services.
+#   Note that kernel backend is very slow for this type of operation
+#   and is provided mainly for embedded systems wanting to avoid
+#   userspace crypto libraries.
+#
+# NOTE: CONFIG_DM_CRYPT must be set for speedy cryptsetup functionality
+#   Probably also a good idea to compile with kernel crypto turned off
+#   didn't think about this earlier, but we also need openssl for GnuPG
+#   So using kernel crypto is actually out of the picture
+#
+# NOTE: We can use Gentoo to build Bash for the initramfs because the following
+#   confuration options are the only ones required, exclusive to Bash and the're
+#   all enabled by default flags:
+#     --enable-brace-expansion
+#     --enable-cond-command
+#     --enable-cond-regexp
+#     --enable-extended-glob
+#     --enable-job-control
+#   It's possible we could shrink the size of Bash by disabling any features
+#   we don't explicitly need. That's a problem for future me.
+#
+emerge \
+	--ask \
+	--oneshot \
+	--root=/mnt/build \
+		cryptsetup \
+		app-crypt/gnupg \
+		app-editors/nano \
+		bash;
+
+
+# TODO: look into https://github.com/cifsd-team/ksmbd-tools to set up
+#   a Kernel based SMB3 + CIFS server FUCKING SAMBA!
+#   Depends on kernel CONFIG_SMB_SERVER=y
+

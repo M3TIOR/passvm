@@ -1,0 +1,4 @@
+export LANG='C.UTF8';
+export LESS='-R -M --shift 5';
+export LESSOPEN='|lesspipe %s';
+export PATH='/sbin:/bin';
