@@ -1,0 +1,30 @@
+verify-sig
+nettle
+
+mbedtls curl_ssl_mbedtls 
+
+# Disable multithreading where possible; this should be so minimal and optimized
+# that it doesn't need multithreading.
+-threads
+
+# nls == GNU internationalization; not needed on embedded system.
+# but it allows us to decreases barrier to entry by having native speaker's
+# languages when made available by upstream maintainers.
+nls
+
+# Use dynamic linked libraries; they're smaller footprint, and thanks to the
+# Gentoo portage system, there's no dependency tracking issues.
+-static-libs
+-static
+
+# The initramfs is 100% run as superuser
+-pam 
+
+# Unneeded feature of GnuPG
+-smartcard 
+
+# Unnecessary features of curl
+-ftp -smtp -adns -tftp -progress-meter -pop3 -curl_ssl_openssl -openssl -ssl
+
+# Unnecessary features of util-linux
+-su -suid -logger -hardlink -cramfs -udev -installkernel -multiarch

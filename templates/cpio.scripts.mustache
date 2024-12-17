@@ -1,0 +1,5 @@
+############################ PassVM Scripts ###################################
+
+# Entry script, Linux looks here before even /sbin/init and is pissy about
+# booting without it.
+file /init                          {{env.PASSVM_RAMFS}}/init           755 0 0

@@ -1,0 +1,69 @@
+# Busybox setup
+file /bin/busybox           {{env.BUSYBOX_DIR}}/busybox                 755 0 0
+slink /bin/base64           /bin/busybox                                755 0 0
+slink /bin/cat              /bin/busybox                                755 0 0
+slink /bin/cp               /bin/busybox                                755 0 0
+slink /bin/dmesg            /bin/busybox                                755 0 0
+slink /bin/echo             /bin/busybox                                755 0 0
+slink /bin/false            /bin/busybox                                755 0 0
+slink /bin/getopt           /bin/busybox                                755 0 0
+slink /bin/grep             /bin/busybox                                755 0 0
+slink /bin/hostname         /bin/busybox                                755 0 0
+slink /bin/kill             /bin/busybox                                755 0 0
+slink /bin/ls               /bin/busybox                                755 0 0
+slink /bin/mkdir            /bin/busybox                                755 0 0
+slink /bin/mktemp           /bin/busybox                                755 0 0
+slink /bin/mount            /bin/busybox                                755 0 0
+slink /bin/mv               /bin/busybox                                755 0 0
+slink /bin/ping             /bin/busybox                                755 0 0
+slink /bin/rm               /bin/busybox                                755 0 0
+slink /bin/rmdir            /bin/busybox                                755 0 0
+slink /bin/sed              /bin/busybox                                755 0 0
+slink /bin/sleep            /bin/busybox                                755 0 0
+slink /bin/true             /bin/busybox                                755 0 0
+slink /bin/umount           /bin/busybox                                755 0 0
+slink /bin/basename         /bin/busybox                                755 0 0
+slink /bin/cut              /bin/busybox                                755 0 0
+slink /bin/dirname          /bin/busybox                                755 0 0
+slink /bin/env              /bin/busybox                                755 0 0
+slink /bin/find             /bin/busybox                                755 0 0
+slink /bin/head             /bin/busybox                                755 0 0
+slink /bin/less             /bin/busybox                                755 0 0
+slink /bin/nc               /bin/busybox                                755 0 0
+slink /bin/pkill            /bin/busybox                                755 0 0
+slink /bin/printf           /bin/busybox                                755 0 0
+slink /bin/realpath         /bin/busybox                                755 0 0
+slink /bin/sh               /bin/busybox                                755 0 0
+slink /bin/shred            /bin/busybox                                755 0 0
+slink /bin/tail             /bin/busybox                                755 0 0
+slink /bin/test             /bin/busybox                                755 0 0
+slink /bin/top              /bin/busybox                                755 0 0
+slink /bin/tr               /bin/busybox                                755 0 0
+slink /bin/tree             /bin/busybox                                755 0 0
+slink /bin/which            /bin/busybox                                755 0 0
+slink /sbin/cttyhack        /bin/busybox                                755 0 0
+slink /sbin/getty           /bin/busybox                                755 0 0
+slink /sbin/ifconfig        /bin/busybox                                755 0 0
+slink /sbin/init            /bin/busybox                                755 0 0
+slink /sbin/ip              /bin/busybox                                755 0 0
+slink /sbin/poweroff        /bin/busybox                                755 0 0
+#slink /usr/sbin/reboot     /bin/busybox                                755 0 0
+slink /sbin/route           /bin/busybox                                755 0 0
+slink /sbin/sulogin         /bin/busybox                                755 0 0
+slink /sbin/sync            /bin/busybox                                755 0 0
+slink /sbin/sysctl          /bin/busybox                                755 0 0
+slink /sbin/syslogd         /bin/busybox                                755 0 0
+slink /sbin/tty             /bin/busybox                                755 0 0
+
+
+
+file /bin/bash               {{env.GENTOO_DIR}}/bin/bash                755 0 0
+
+file /bin/cryptsetup         {{env.GENTOO_DIR}}/sbin/cryptsetup         755 0 0
+
+file /bin/gpg                {{env.GENTOO_DIR}}/usr/bin/gpg             755 0 0
+slink /bin/gpg2              /bin/gpg                                   755 0 0
+file /bin/gpgconf            {{env.GENTOO_DIR}}/usr/bin/gpgconf         755 0 0
+file /bin/gpg-agent          {{env.GENTOO_DIR}}/usr/bin/gpg-agent       755 0 0
+
+file /usr/bin/nano           {{env.GENTOO_DIR}}/bin/nano                755 0 0

@@ -58,5 +58,8 @@ dkms.conf
 .gentoo-chroot
 reversing
 
+# Dynamically generated; shouldn't be committed.
+templates/cpio.sodeps.mustache
+
 # Git files
 .git

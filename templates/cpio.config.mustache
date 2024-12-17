@@ -1,0 +1,20 @@
+######################## Configuration Files ##################################
+
+# Init system configuration
+file /etc/inittab            {{env.PASSVM_RAMFS}}/etc/inittab           644 0 0
+file /etc/init.d/shutdown    {{env.PASSVM_RAMFS}}/etc/init.d/shutdown   755 0 0
+file /etc/init.d/sysinit     {{env.PASSVM_RAMFS}}/etc/init.d/sysinit    755 0 0
+
+# Users
+file /etc/passwd             {{env.PASSVM_RAMFS}}/etc/passwd            644 0 0
+
+# Readline config {common dependency} used in many gnulib applications for
+# terminal control character support.
+file /etc/inputrc            {{env.GENTOO_DIR}}/etc/inputrc             644 0 0
+
+file /etc/bash/bashrc        {{env.GENTOO_DIR}}/etc/bash/bashrc         644 0 0
+dir /etc/bash/bashrc.d                                                  755 0 0
+file /etc/bash/bash_logout   {{env.GENTOO_DIR}}/etc/bash/bash_logout    644 0 0
+
+# Editor
+file /etc/nanorc             {{env.PASSVM_RAMFS}}/etc/nanorc            644 0 0

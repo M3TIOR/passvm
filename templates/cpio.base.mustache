@@ -1,0 +1,70 @@
+# Usage:
+# 	./usr/gen_init_cpio [-t <timestamp>] [-c] <cpio_list>
+# 
+# <cpio_list> is a file containing newline separated entries that
+# describe the files to be included in the initramfs archive:
+# 
+# # a comment
+# file <name> <location> <mode> <uid> <gid> [<hard links>]
+# dir <name> <mode> <uid> <gid>
+# nod <name> <mode> <uid> <gid> <dev_type> <maj> <min>
+# slink <name> <target> <mode> <uid> <gid>
+# pipe <name> <mode> <uid> <gid>
+# sock <name> <mode> <uid> <gid>
+#
+# <name>       name of the file/dir/nod/etc in the archive
+# <location>   location of the file in the current filesystem
+#              expands shell variables quoted with ${}
+# <target>     link target
+# <mode>       mode/permissions of the file
+# <uid>        user id (0=root)
+# <gid>        group id (0=root)
+# <dev_type>   device type (b=block, c=character)
+# <maj>        major number of nod
+# <min>        minor number of nod
+# <hard links> space separated list of other links to file
+
+# Critical kernel mountpoints
+dir /proc                                                               755 0 0
+dir /sys                                                                755 0 0
+dir /dev                                                                755 0 0
+dir /var                                                                755 0 0
+dir /run                                                                755 0 0
+
+# Builtin configuration files
+dir /etc                                                                755 0 0
+dir /etc/init.d                                                         755 0 0
+
+# Binary folders; using usr-joined
+dir /usr                                                                755 0 0
+dir /usr/bin                                                            755 0 0
+dir /usr/sbin                                                           755 0 0
+slink /bin /usr/bin                                                     755 0 0
+slink /sbin /usr/sbin                                                   755 0 0
+
+# Unlocked user home; USED AS THE MOUNT TARGET
+dir /home                                                               755 0 0
+dir /home/root                                                          700 0 0
+
+# TODO: Look over kernel settings and set up necessary nodes
+# Make a few critical device nodes
+nod /dev/null                                                           666 0 0 c 1 3
+nod /dev/zero                                                           666 0 0 c 1 5
+nod /dev/tty                                                            666 0 0 c 5 0
+nod /dev/tty0                                                           666 0 0 c 4 0
+nod /dev/ttyS0                                                          666 0 0 c 4 64
+nod /dev/console                                                        600 0 0 c 5 1
+nod /dev/uinput                                                         660 0 0 c 10 223
+nod /dev/urandom                                                        666 0 0 c 1 9
+
+# Kernel CPU info
+dir /dev/cpu                                                            755 0 0
+dir /dev/cpu/0                                                          755 0 0
+
+# From CONFIG_X86_MSR Model Specific Registers; may not be needed,
+# TODO: see if this can be pruned from the initramfs & kernel
+nod /dev/cpu/0/msr                                                      600 0 0 c 202 0
+
+# From CONFIG_X86_CPUID
+nod /dev/cpu/0/cpuid                                                    600 0 0 c 203 0
+
